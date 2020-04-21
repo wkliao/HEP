@@ -9,7 +9,7 @@
   4. track fitting
 
 <p align="center">
-<img align="center" src="docs/3d.jpg" alt="3D plane detector toy data" width="600">
+<img align="center" src="3d.jpg" alt="3D plane detector toy data" width="600">
 </p>
 
 * **Hit clustering**
