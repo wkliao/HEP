@@ -13,23 +13,27 @@
 </p>
 
 * **Hit clustering**
-  + **Hit** -- A hit is a particle location appearing on a slice.
-  + Hit clustering is used to identify individual particles from those pixels into 3D coordinates.
-  + In the raw data slice, a particle can be captured by multiple pixels.
-  + There are O(10^8) pixels and *hit clustering* reduces it to O(10^5) coordinates.
+  + **Hit** -- A hit is a particle location detected on a slice (detector layer).
+  + Data clustering algorithm is applied on each slice to identify individual
+    particles from those pixels, so each particle is repredented by its 3D coordinates.
+  + Applicatioon of clustering on the raw data slice is necessary, because a particle
+    may be captured by multiple detector wires and appear in multiple pixels, e.g. a
+    pixel and its surrounding pixels.
+  + There are O(10^8) pixels and *hit clustering* reduces it to O(10^5).
   + Hits are the vertices in the graph representation.
   + **ML methods used**
     * Shallow neural networks are used to identify shared cluster.
 * **Seed finding**
-  + **Seed** -- A seed is a 3 coordinates from 3 consecutive slices, referred as *triplet*.
-    * A seed can also be a *doublet*, i.e. from 2 hits on two subsequent slices.
+  + **Seed** -- A seed is a tuple of 3 coordinates from 3 consecutive slices,
+    also referred as *triplet*.
+    * A seed can also be a *doublet*, i.e. from 2 hits on two consecutive slices.
     * A seed is the smallest set of space-points that allows to estimate the track curvature.
   + Seeds are selected based on the doublet/triplet geometry, its momentum, and its perigee.
   + **ML methods used**
-    * **TODO**: need to collect methods used from papers
+    * **TODO**: to collect from papers
 * **Track building**
+  + Seeds found and constructed from the seed finding stage are just candidates of tracks.
   + Filtering out the "fake" seeds is required before building tracks.
-  + Seeds constructed from all slices are just candidates of tracks.
   + **TODO**: need to collect more info about the remaining building process after filtering.
   + **ML methods used**
     * Combinatorial Kalman Filter (CKF) is a well-known method that is very efficient to filter out fake seeds
