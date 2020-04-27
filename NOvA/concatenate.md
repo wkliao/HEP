@@ -506,24 +506,22 @@ concatenating all input files into one single file.
 
 ### Fill mode is always on when doing parallel I/O for compressed dartaset
 * We found that the dataset fill mode is always on when compression of a
-  dataset is enabled and the dataset is accessed in parallel. This is true even
-  if users calls `H5Pget_fill_time()` to set the mode to `H5D_FILL_TIME_NEVER`.
-  Fill mode may be expensive if the number of datasets is large. See discussion
-  in HDF Forum
-  [6263](https://forum.hdfgroup.org/t/fill-mode-in-parallel-compression/6263).
-* This is a limitation of the MPI-IO driver. The MPI driver requires the storage
-  space to be fully allocated. When a file is opened with MPI driver, fill 
-  allocation time is being overwritten to 5FD_FEAT_ALLOCATE_EARLY. It causes 
-  chunk allocation on H5Dcreate. When filters are used, the fill value is always 
-  written on newly created chunks. The reason behind this requirement is still 
-  unknown. 
-* When filling a filtered dataset, a chunk buffer is filled with fill value and 
-  passed through the filter pipeline. The filtered data is then written to all 
-  chunks sing derived datatype. In total, HDF5 runs the filter pipeline on a 
-  single chunk and writes it multiple times in a single MPI_File_write_at call.
-* A possible way to bypass this is to create a filter plugin that map fill value
-  to 0 length output. With a chunk size of length 0, I/O should return 
-  immediately.
+  dataset is enabled and dataset access is in parallel. Explicitly calling
+  `H5Pget_fill_time()` to change the mode to `H5D_FILL_TIME_NEVER` takes no
+  effect.
+  This is becayse enabling fill mode is necessary when tracking whether a
+  chunk is fully written in a collective H5Dwrite call is not implemented
+  (because it is unpractical or performs poorly) and the chunk owners need
+  the whole chunk before applying compression to it.
+* The MPI driver requires the storage space of a chunk to be fully allocated
+  for datasets with compression enabled.
+  When a file is opened with MPI driver, allocating dataset storage space is
+  overwritten to H5D_ALLOC_TIME_EARLY, which causes chunk buffer to be filled
+  with the (default) fill value at H5Dcreate.
+* When filling a filtered dataset, a chunk buffer is first filled with fill
+  value and then passed through the filter pipeline. The filtered/compressed
+  chunks are then written to file using an MPI derived datatype in a single
+  MPI_File_write_at call.
 
 ### Options in H5Pset_alloc_time
 * We found no matter what option is used in calling H5Pset_alloc_time(), HDF5
