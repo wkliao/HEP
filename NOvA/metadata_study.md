@@ -1,9 +1,16 @@
 ## Study Note of HEP_HPC example program
 
 ### HEP_HPC example program:
-  + Link: https://bitbucket.org/fnalscdcomputationalscience/hep_hpc/src/master/examples/make_ntuple_file.cc
-  + For the ND/FD data HDF5 files, the metadata is found to be spread out in the file interleaved with raw data blocks. This example program generates the HDF5 file in the same way. So we want to study this demo code to figure out why these files have such a layout.
-
+  + An short program that follows the same way of creating HDF5 data object as the one used by NOvA.
+    It is developed to study the metadata layout in the NOvA file, in hope to find some
+    tricks too improve I/O performace, such as by adjusting the metaata block size, the
+    order of data object creation.
+  + Source codes:
+    https://bitbucket.org/fnalscdcomputationalscience/hep_hpc/src/master/examples/make_ntuple_file.cc
+  + For the ND/FD data HDF5 files, the metadata is found to be spread out in 
+    the file interleaved with raw data blocks. This example program generates 
+    the HDF5 file in the same way. So we want to study this demo code to figure
+    out why these files have such a layout.
 ### Comparision between original ND data files and repacked ND data files
 |                | Original files | Repacked files |
 | :------------  | :------------  | :------------  |
