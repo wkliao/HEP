@@ -6,10 +6,11 @@
 
 ### Comparision between original ND data files and repacked ND data files
 |                | Original files | Repacked files |
-| ------------:  | ------------:  | ------------:  |
+| :------------  | :------------  | :------------  |
 | Group object headers | the group object headers of consecutive groups are placed in order | the object headers of consecutive groups are located far from each other and not ordered |
 | Example of group object headers | - rec.trk.bpf.tracks: 8765199 <br> - rec.trk.bpf.tracks.me: 8777722 <br> - rec.trk.bpf.tracks.me.truth: 8781937 |- rec.trk.bpf.tracks: 1563536 <br> - rec.trk.bpf.tracks.me: 3157760 <br> - rec.trk.bpf.tracks.me.truth: 3091536 |
 | Pattern | group object headers (not in order) <br> dataset object headers | group 1 object header <br> dataset object headers of group1 <br> group 2 object header <br> dataset object headers of group2 <br> ... <br> object header of the last group <br> dataset object headers of the last group |
+  + Consecutive means that the names are ordered so that they will be visited by H5Ovisit one after another.
 
 ### 2 groups, dataset size = 10, default metadata block size 1KB
 * File offsets of Metadata blocks:
