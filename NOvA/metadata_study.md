@@ -8,9 +8,22 @@
   + Source codes:
     https://bitbucket.org/fnalscdcomputationalscience/hep_hpc/src/master/examples/make_ntuple_file.cc
   + For the ND/FD data HDF5 files, the metadata is found to be spread out in 
-    the file interleaved with raw data blocks. This example program generates 
-    the HDF5 file in the same way. So we want to study this demo code to figure
-    out why these files have such a layout.
+    the file interleaved with raw data blocks. This example program was developed by Marc Paterno
+    to mimic the generation of NOvA HDF5 files, in hope it can be used to study the data object
+    layouts in files when trying various HDF5 parameter settings.
+  + The file produced by this example program contains two groups, each has a few datasets.
+    * GROUP "table_1"
+      + DATASET "a", a 2D int array of size LEN x 1
+      + DATASET "arry", a 3D int array of size LEN x 3 x 4
+      + DATASET "b", a 2D double array size LEN x 1
+      + DATASET "c", a 2D double array size LEN x 1
+      + DATASET "d", a 2D int array size LEN x 1
+    * GROUP "table_2"
+      + DATASET "x", a 2D double array size LEN x 1
+      + DATASET "y", a 2D double array size LEN x 1
+      + DATASET "z", a 2D int array size LEN x 1
+  + 'LEN' is the command-line option.
+  + Command '`h5dump -Hp output.h5`' shows the detailed information of data objects stored in a HDF5 file.
 ### Compare files generated from program, original ND data files and repacked ND data files
 |                | Generated files | Original files | Repacked files |
 | :------------  | :------------   | :------------  | :------------  |
