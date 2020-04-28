@@ -11,196 +11,83 @@
     the file interleaved with raw data blocks. This example program generates 
     the HDF5 file in the same way. So we want to study this demo code to figure
     out why these files have such a layout.
-### Comparision between original ND data files and repacked ND data files
-|                | Original files | Repacked files |
-| :------------  | :------------  | :------------  |
-| Group object headers | the object headers of consecutive groups are located far from each other and not ordered | the group object headers of consecutive groups are placed in order |
-| Example of group object headers | - rec.trk.bpf.tracks: 1563536 <br> - rec.trk.bpf.tracks.me: 3157760 <br> - rec.trk.bpf.tracks.me.truth: 3091536 | - rec.trk.bpf.tracks: 8765199 <br> - rec.trk.bpf.tracks.me: 8777722 <br> - rec.trk.bpf.tracks.me.truth: 8781937 |
-| Pattern | group object headers (not in order) <br> dataset object headers | group 1 object header <br> dataset object headers of group1 <br> group 2 object header <br> dataset object headers of group2 <br> ... <br> object header of the last group <br> dataset object headers of the last group |
+### Compare files generated from program, original ND data files and repacked ND data files
+|                | Generated files | Original files | Repacked files |
+| :------------  | :------------   | :------------  | :------------  |
+| Group object headers | most group object headers of consecutive groups are placed in order |the object headers of consecutive groups are located far from each other and not ordered | the group object headers of consecutive groups are placed in order |
+| Example of group object headers | | - rec.trk.bpf.tracks: 1563536 <br> - rec.trk.bpf.tracks.me: 3157760 <br> - rec.trk.bpf.tracks.me.truth: 3091536 | - rec.trk.bpf.tracks: 8765199 <br> - rec.trk.bpf.tracks.me: 8777722 <br> - rec.trk.bpf.tracks.me.truth: 8781937 |
+| Order of metadata | | group object headers (not in order) <br> dataset object headers | group 1 object header <br> dataset object headers of group1 <br> group 2 object header <br> dataset object headers of group2 <br> ... <br> object header of the last group <br> dataset object headers of the last group |
   + Consecutive means that the names are ordered so that they will be visited by H5Ovisit one after another.
 
-### 2 groups, dataset size = 10, default metadata block size 1KB
+### 10 groups, dataset size = 1000, default metadata block size 1KB
+* File offsets:
+  + table_1 object header: 800
+  + table_2 object header: 3520
+  + table_3 object header: 6728
+  + table_4 object header: 9936
+  + table_5 object header: 13144
+  + table_6 object header: 16352
+  + table_7 object header: 19560
+  + table_8 object header: 22768
+  + table_9 object header: 25976
+  + table_10 object header: 712
+* Sequence of HDF5 API calls:
+  + The order of H5Gcreate2 is the increasing order of the id of group.
+  + Here I observed an odd group "table_10" which is created after all other groups but has the smallest file offset. In the B-tree, there are 2 leaf nodes. Each of them contains 5 groups. And "table_10" is in the first node with "table_1" to "table_4".   
+  
+### 2 groups, dataset size = 256, default metadata block size 1KB
 * File offsets of Metadata blocks:
   + root group symbol table: 96
   + B-tree: 136
   + heap: 680
   + symbol table node: 1504
-  + symbol table entry 0 (group 1):
+  + symbol table entry 0 (table_1):
     * object header: 800
     * B-tree: 840
     * heap: 1384
     * symbol table node: 2104
-      + object header of symbol 0: 1832
-      + object header of symbol 1: 3248
-      + object header of symbol 2: 2432
-      + object header of symbol 3: 2704
-      + object header of symbol 4: 2976
-  + symbol table entry 1 (group 2):
+      + object header of dataset "a": 1832
+      + object header of dataset "b": 2432
+      + object header of dataset "c": 2704
+      + object header of dataset "d": 2976
+      + object header of dataset "arry": 3248
+  + symbol table entry 1 (table_2):
     * object header: 3520
     * B-tree: 3560
     * heap: 4104
     * symbol table node: 4496
-      + object header of symbol 0: 4224
-      + object header of symbol 1: 4824
-      + object header of symbol 2: 5096
+      + object header of dataset "x": 4224
+      + object header of dataset "y": 4824
+      + object header of dataset "z": 5096
+      + object header of dataset "a": 5368
+      + object header of dataset "b": 5640
+      + object header of dataset "c": 5912
 
-* Metadata of the output file from "h5dump -Hp":  
-GROUP "/" {  
-　　GROUP "table_1" {  
-　　　　DATASET "a" {  
-　　　　DATATYPE  H5T_STD_I32LE  
-　　　　DATASPACE  SIMPLE { ( 10, 1 ) / ( H5S_UNLIMITED, 1 ) }  
-　　　　STORAGE_LAYOUT {  
-　　　　　　CHUNKED ( 262144, 1 )  
-　　　　　　SIZE 1094 (0.037:1 COMPRESSION)  
-　　　　}  
-　　　　FILTERS {  
-　　　　　　PREPROCESSING SHUFFLE  
-　　　　　　COMPRESSION DEFLATE { LEVEL 6 }  
-　　　　}  
-　　　　FILLVALUE {  
-　　　　　　FILL_TIME H5D_FILL_TIME_IFSET  
-　　　　　　VALUE  H5D_FILL_VALUE_DEFAULT  
-　　　　}  
-　　　　  ALLOCATION_TIME {  
-　　　　  H5D_ALLOC_TIME_INCR  
-　　　　}  
-　　}  
-　　　　DATASET "arry" {  
-　　　　　　DATATYPE  H5T_STD_I32LE  
-　　　　　　DATASPACE  SIMPLE { ( 10, 3, 4 ) / ( H5S_UNLIMITED, 3, 4 ) }  
-　　　　　　STORAGE_LAYOUT {  
-　　　　　　　　CHUNKED ( 21845, 3, 4 )  
-　　　　　　　　SIZE 1486 (0.323:1 COMPRESSION)  
-　　　　　　}  
-　　　　　　FILTERS {  
-　　　　　　　　PREPROCESSING SHUFFLE  
-　　　　　　　　COMPRESSION DEFLATE { LEVEL 6 }  
-　　　　　　}  
-　　　　　　FILLVALUE {  
-　　　　　　　　FILL_TIME H5D_FILL_TIME_IFSET  
-　　　　　　　　VALUE  H5D_FILL_VALUE_DEFAULT  
-　　　　　　}  
-　　　　　　ALLOCATION_TIME {  
-　　　　　　　　H5D_ALLOC_TIME_INCR  
-　　　　　　}  
-　　　　}  
-　　　　DATASET "b" {  
-　　　　　　DATATYPE  H5T_IEEE_F64LE  
-　　　　　　DATASPACE  SIMPLE { ( 10, 1 ) / ( H5S_UNLIMITED, 1 ) }  
-　　　　　　STORAGE_LAYOUT {  
-　　　　　　　　CHUNKED ( 128, 1 )  
-　　　　　　　　SIZE 100 (0.800:1 COMPRESSION)  
-　　　　　　}  
-　　　　　　FILTERS {  
-　　　　　　　　COMPRESSION DEFLATE { LEVEL 6 }  
-　　　　　　}  
-　　　　　　FILLVALUE {  
-　　　　　　　　FILL_TIME H5D_FILL_TIME_IFSET  
-　　　　　　　　VALUE  H5D_FILL_VALUE_DEFAULT  
-　　　　　　}  
-　　　　　　ALLOCATION_TIME {  
-　　　　　　　　H5D_ALLOC_TIME_INCR  
-　　　　　　}  
-　　　　}  
-　　　　DATASET "c" {  
-　　　　　　DATATYPE  H5T_IEEE_F64LE  
-　　　　　　DATASPACE  SIMPLE { ( 10, 1 ) / ( H5S_UNLIMITED, 1 ) }  
-　　　　　　STORAGE_LAYOUT {  
-　　　　　　　　CHUNKED ( 128, 1 )  
-　　　　　　　　SIZE 100 (0.800:1 COMPRESSION)  
-　　　　　　}  
-　　　　　　FILTERS {  
-　　　　　　　　COMPRESSION DEFLATE { LEVEL 6 }  
-　　　　　　}  
-　　　　　　FILLVALUE {  
-　　　　　　　　FILL_TIME H5D_FILL_TIME_IFSET  
-　　　　　　　　VALUE  H5D_FILL_VALUE_DEFAULT  
-　　　　　　}  
-　　　　　　ALLOCATION_TIME {  
-　　　　　　　　H5D_ALLOC_TIME_INCR  
-　　　　　　}  
-　　　　}  
-　　　　DATASET "d" {  
-　　　　　　DATATYPE  H5T_STD_I32LE  
-　　　　　　DATASPACE  SIMPLE { ( 10, 1 ) / ( H5S_UNLIMITED, 1 ) }  
-　　　　　　STORAGE_LAYOUT {  
-　　　　　　　　CHUNKED ( 128, 1 )  
-　　　　　　　　SIZE 52 (0.769:1 COMPRESSION)  
-　　　　　　}  
-　　　　　　FILTERS {  
-　　　　　　　　COMPRESSION DEFLATE { LEVEL 6 }  
-　　　　　　}  
-　　　　　　FILLVALUE {  
-　　　　　　　　FILL_TIME H5D_FILL_TIME_IFSET  
-　　　　　　　　VALUE  H5D_FILL_VALUE_DEFAULT  
-　　　　　　}  
-　　　　　　ALLOCATION_TIME {  
-　　　　　　　　H5D_ALLOC_TIME_INCR  
-　　　　　　}  
-　　　　}  
-　　}  
-　　GROUP "table_2" {  
-　　　　DATASET "x" {  
-　　　　　　DATATYPE  H5T_IEEE_F64LE  
-　　　　　　DATASPACE  SIMPLE { ( 10, 1 ) / ( H5S_UNLIMITED, 1 ) }  
-　　　　　　STORAGE_LAYOUT {  
-　　　　　　　　CHUNKED ( 128, 1 )  
-　　　　　　　　SIZE 99 (0.808:1 COMPRESSION)  
-　　　　　　}  
-　　　　　　FILTERS {  
-　　　　　　　　COMPRESSION DEFLATE { LEVEL 6 }  
-　　　　　　}  
-　　　　　　FILLVALUE {  
-　　　　　　　　FILL_TIME H5D_FILL_TIME_IFSET  
-　　　　　　　　VALUE  H5D_FILL_VALUE_DEFAULT  
-　　　　　　}  
-　　　　　　ALLOCATION_TIME {  
-　　　　　　　　H5D_ALLOC_TIME_INCR  
-　　　　　　}  
-　　　　}  
-　　　　DATASET "y" {  
-　　　　　　DATATYPE  H5T_IEEE_F64LE  
-　　　　　　DATASPACE  SIMPLE { ( 10, 1 ) / ( H5S_UNLIMITED, 1 ) }  
-　　　　　　STORAGE_LAYOUT {  
-　　　　　　　　CHUNKED ( 128, 1 )  
-　　　　　　　　SIZE 100 (0.800:1 COMPRESSION)  
-　　　　　　}  
-　　　　　　FILTERS {  
-　　　　　　　　COMPRESSION DEFLATE { LEVEL 6 }  
-　　　　　　}  
-　　　　　　FILLVALUE {  
-　　　　　　　　FILL_TIME H5D_FILL_TIME_IFSET  
-　　　　　　　　VALUE  H5D_FILL_VALUE_DEFAULT  
-　　　　　　}  
-　　　　　　ALLOCATION_TIME {  
-　　　　　　　　H5D_ALLOC_TIME_INCR  
-　　　　　　}  
-　　　　}  
-　　　　DATASET "z" {  
-　　　　　　DATATYPE  H5T_STD_I32LE  
-　　　　　　DATASPACE  SIMPLE { ( 10, 1 ) / ( H5S_UNLIMITED, 1 ) }  
-　　　　　　STORAGE_LAYOUT {  
-　　　　　　　　CHUNKED ( 128, 1 )  
-　　　　　　　　SIZE 53 (0.755:1 COMPRESSION)  
-　　　　　　}  
-　　　　　　FILTERS {  
-　　　　　　　　COMPRESSION DEFLATE { LEVEL 6 }  
-　　　　　　}  
-　　　　　　FILLVALUE {  
-　　　　　　　　FILL_TIME H5D_FILL_TIME_IFSET  
-　　　　　　　　VALUE  H5D_FILL_VALUE_DEFAULT  
-　　　　　　}  
-　　　　　　ALLOCATION_TIME {  
-　　　　　　　　H5D_ALLOC_TIME_INCR  
-　　　　　　}  
-　　　　}  
-　　}  
-}  
-
+* Sequence of HDF5 API calls:
+  + H5Fcreate out_2_256.h5
+  + H5Gcreate2 table_1 open_mode
+  + H5Dcreate2 a
+  + H5Dcreate2 b
+  + H5Dcreate2 c
+  + H5Dcreate2 d
+  + H5Dcreate2 arry
+  + H5Gcreate2 table_2 open_mode
+  + H5Dcreate2 x
+  + H5Dcreate2 y
+  + H5Dcreate2 z
+  + H5Dcreate2 a
+  + H5Dcreate2 b
+  + H5Dcreate2 c
+  + H5Dwrite (6 times; write datasets in group table_2)
+  + H5Dclose (6 times; close datasets in group table_2)
+  + H5Gclose (close group 2)
+  + H5Dwrite (5 times; write datasets in group table_1)
+  + H5Dclose (5 times; close datasets in group table_1)
+  + H5Gclose (close group 1)
 
 * Analysis:
-The object headers of two groups are right after B-tree and the heap of the file. And while the file offsets of the object headers of two groups are far from each other (800, 3520), the object headers of datasets are located between them. (But the B-tree of each dataset seems to be located far from all other metadata.)
+  + The object headers of two groups are right after B-tree and the heap of the file. And while the file offsets of the object headers of two groups are far from each other (800, 3520), the object headers of datasets are located between them. (But the B-tree of each dataset seems to be located far from all other metadata.)
+  + The file was only created (and opened) once. The program creates the groups and their datasets and writes to them later. And the increasing order of file offsets of metadata is the same as the creation order.
 
 ### 2 groups, dataset size = 256, default metadata block size 1KB
 * The location of matadata:
