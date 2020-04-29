@@ -27,22 +27,26 @@
   
 ---
 
-## Compare files generated from program, original ND data files and repacked ND data files
-|                | Generated files | Original files | Repacked files |
-| :------------  | :------------   | :------------  | :------------  |
-| Group object headers | most group object headers of consecutive groups are placed in order |the object headers of consecutive groups are located far from each other and not ordered | the group object headers of consecutive groups are placed in order |
-| Example of group object headers | | - rec.trk.bpf.tracks: 1563536 <br> - rec.trk.bpf.tracks.me: 3157760 <br> - rec.trk.bpf.tracks.me.truth: 3091536 | - rec.trk.bpf.tracks: 8765199 <br> - rec.trk.bpf.tracks.me: 8777722 <br> - rec.trk.bpf.tracks.me.truth: 8781937 |
-| Order of metadata | | group object headers (not in order) <br> dataset object headers | group 1 object header <br> dataset object headers of group1 <br> group 2 object header <br> dataset object headers of group2 <br> ... <br> object header of the last group <br> dataset object headers of the last group |
-  + Consecutive means that the names are ordered so that they will be visited by H5Ovisit one after another.
-  
----
-
 ## Test with example program
 We modified the example program with different settings. And we collected the file offsets of metadata of the output file and the sequence of HDF5 API calls when the output file was generated to better understand the behavior of the example program.
 
 ### Test 1 (2 groups, dataset size = 256, default metadata block size 2KB)
 First we ran the original example program to collect the information of the output file.
+
+To create the output file, run:
+```
+./make_ntuple_file <output filename> 256 256
+```
 * File offsets of Metadata blocks of the output file:
+
+To get the file offsets of metadata, run:
+```
+h5debug <output filename> <file offsets> |less
+```
+To get the file offsets of group and dataset object headers, run:
+```
+h5ls -vr <output filename>
+```
   + root group symbol table: 96
   + B-tree: 136
   + heap: 680
@@ -102,7 +106,17 @@ First we ran the original example program to collect the information of the outp
 
 ### Test 2 (10 groups, dataset size = 1000, default metadata block size 2KB)
 Then we modified the example program to generate a file with more groups and each group contains more datasets.
+
+To create the output file, run:
+```
+./make_ntuple_file <output filename> 1000 1000 1000 1000 1000 1000 1000 1000 1000 1000
+```
 * File offsets of the metadata of the output file:
+
+To get the file offsets of group and dataset object headers, run:
+```
+h5ls -vr <output filename>
+```
   + table_1 object header: 800
   + table_2 object header: 3520
   + table_3 object header: 6728
@@ -116,4 +130,14 @@ Then we modified the example program to generate a file with more groups and eac
 * Sequence of HDF5 API calls when created the output file:
   + The creation order of groups is the same as the increasing order of the id of group.
   + Odd behavior: Here I observed an odd group "table_10" which is created after all other groups but has the smallest file offset. In the B-tree, there are 2 leaf nodes. Each of them contains 5 groups. And "table_10" is in the first node with "table_1" to "table_4".   
+  
+---
+
+## Compare files generated from program, original ND data files and repacked ND data files
+|                | Original files | Repacked files |
+| :------------  | :------------  | :------------  |
+| Group object headers |the object headers of consecutive groups are located far from each other and not ordered | the group object headers of consecutive groups are placed in order |
+| Example of group object headers | - rec.trk.bpf.tracks: 1563536 <br> - rec.trk.bpf.tracks.me: 3157760 <br> - rec.trk.bpf.tracks.me.truth: 3091536 | - rec.trk.bpf.tracks: 8765199 <br> - rec.trk.bpf.tracks.me: 8777722 <br> - rec.trk.bpf.tracks.me.truth: 8781937 |
+| Order of metadata | group object headers (not in order) <br> dataset object headers | group 1 object header <br> dataset object headers of group1 <br> group 2 object header <br> dataset object headers of group2 <br> ... <br> object header of the last group <br> dataset object headers of the last group |
+  + Consecutive means that the names are ordered so that they will be visited by H5Ovisit one after another.
   
