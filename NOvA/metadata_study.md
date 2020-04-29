@@ -31,8 +31,8 @@
 | Example of group object headers | | - rec.trk.bpf.tracks: 1563536 <br> - rec.trk.bpf.tracks.me: 3157760 <br> - rec.trk.bpf.tracks.me.truth: 3091536 | - rec.trk.bpf.tracks: 8765199 <br> - rec.trk.bpf.tracks.me: 8777722 <br> - rec.trk.bpf.tracks.me.truth: 8781937 |
 | Order of metadata | | group object headers (not in order) <br> dataset object headers | group 1 object header <br> dataset object headers of group1 <br> group 2 object header <br> dataset object headers of group2 <br> ... <br> object header of the last group <br> dataset object headers of the last group |
   + Consecutive means that the names are ordered so that they will be visited by H5Ovisit one after another.
-
-### 10 groups, dataset size = 1000, default metadata block size 2KB
+### Tests with example program
+#### 10 groups, dataset size = 1000, default metadata block size 2KB
 * File offsets:
   + table_1 object header: 800
   + table_2 object header: 3520
@@ -45,10 +45,10 @@
   + table_9 object header: 25976
   + table_10 object header: 712
 * Sequence of HDF5 API calls:
-  + The order of H5Gcreate2 is the increasing order of the id of group.
+  + The order of H5Gcreate2 is the same as the increasing order of the id of group.
   + Here I observed an odd group "table_10" which is created after all other groups but has the smallest file offset. In the B-tree, there are 2 leaf nodes. Each of them contains 5 groups. And "table_10" is in the first node with "table_1" to "table_4".   
   
-### 2 groups, dataset size = 256, default metadata block size 2KB
+#### 2 groups, dataset size = 256, default metadata block size 2KB
 * File offsets of Metadata blocks:
   + root group symbol table: 96
   + B-tree: 136
@@ -102,7 +102,7 @@
   + The object headers of two groups are right after B-tree and the heap of the file. And while the file offsets of the object headers of two groups are far from each other (800, 3520), the object headers of datasets are located between them. (But the B-tree of each dataset seems to be located far from all other metadata.)
   + The file was only created (and opened) once. The program creates the groups and their datasets and writes to them later. And the increasing order of file offsets of metadata is the same as the creation order.
 
-### 2 groups, dataset size = 256, default metadata block size 2KB
+#### 2 groups, dataset size = 256, default metadata block size 2KB
 * The location of matadata:
   + group1 object header
   + datasets object headers in group1
