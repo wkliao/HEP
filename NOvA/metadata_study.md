@@ -31,7 +31,8 @@
 | Example of group object headers | | - rec.trk.bpf.tracks: 1563536 <br> - rec.trk.bpf.tracks.me: 3157760 <br> - rec.trk.bpf.tracks.me.truth: 3091536 | - rec.trk.bpf.tracks: 8765199 <br> - rec.trk.bpf.tracks.me: 8777722 <br> - rec.trk.bpf.tracks.me.truth: 8781937 |
 | Order of metadata | | group object headers (not in order) <br> dataset object headers | group 1 object header <br> dataset object headers of group1 <br> group 2 object header <br> dataset object headers of group2 <br> ... <br> object header of the last group <br> dataset object headers of the last group |
   + Consecutive means that the names are ordered so that they will be visited by H5Ovisit one after another.
-### Tests with example program
+### Test with example program
+We modified the example program with different settings to collect the file offsets of metadata and the sequence of HDF5 API calls.
 #### Test 1 (10 groups, dataset size = 1000, default metadata block size 2KB)
 * File offsets:
   + table_1 object header: 800
