@@ -24,6 +24,9 @@
       + DATASET "z", a 2D int array size LEN x 1
   + 'LEN' is the command-line option.
   + Command '`h5dump -Hp output.h5`' shows the detailed information of data objects stored in a HDF5 file.
+  
+---
+
 ### Compare files generated from program, original ND data files and repacked ND data files
 |                | Generated files | Original files | Repacked files |
 | :------------  | :------------   | :------------  | :------------  |
@@ -31,10 +34,13 @@
 | Example of group object headers | | - rec.trk.bpf.tracks: 1563536 <br> - rec.trk.bpf.tracks.me: 3157760 <br> - rec.trk.bpf.tracks.me.truth: 3091536 | - rec.trk.bpf.tracks: 8765199 <br> - rec.trk.bpf.tracks.me: 8777722 <br> - rec.trk.bpf.tracks.me.truth: 8781937 |
 | Order of metadata | | group object headers (not in order) <br> dataset object headers | group 1 object header <br> dataset object headers of group1 <br> group 2 object header <br> dataset object headers of group2 <br> ... <br> object header of the last group <br> dataset object headers of the last group |
   + Consecutive means that the names are ordered so that they will be visited by H5Ovisit one after another.
+  
+---
+
 ### Test with example program
-We modified the example program with different settings to collect the file offsets of metadata and the sequence of HDF5 API calls.
+We modified the example program with different settings. And we collected the file offsets of metadata of the output file and the sequence of HDF5 API calls when the output file was generated to better understand the behavior of the example program.
 #### Test 1 (10 groups, dataset size = 1000, default metadata block size 2KB)
-* File offsets:
+* File offsets of the metadata of the output file:
   + table_1 object header: 800
   + table_2 object header: 3520
   + table_3 object header: 6728
@@ -45,12 +51,12 @@ We modified the example program with different settings to collect the file offs
   + table_8 object header: 22768
   + table_9 object header: 25976
   + table_10 object header: 712
-* Sequence of HDF5 API calls:
+* Sequence of HDF5 API calls when created the output file:
   + The creation order of groups is the same as the increasing order of the id of group.
   + Odd behavior: Here I observed an odd group "table_10" which is created after all other groups but has the smallest file offset. In the B-tree, there are 2 leaf nodes. Each of them contains 5 groups. And "table_10" is in the first node with "table_1" to "table_4".   
   
 #### Test 2 (2 groups, dataset size = 256, default metadata block size 2KB)
-* File offsets of Metadata blocks:
+* File offsets of Metadata blocks of the output file:
   + root group symbol table: 96
   + B-tree: 136
   + heap: 680
@@ -77,7 +83,7 @@ We modified the example program with different settings to collect the file offs
       + object header of dataset "b": 5640
       + object header of dataset "c": 5912
 
-* Sequence of HDF5 API calls:
+* Sequence of HDF5 API calls when created the output file:
   + H5Fcreate out_2_256.h5
   + H5Gcreate2 table_1 open_mode
   + H5Dcreate2 a
@@ -104,7 +110,7 @@ We modified the example program with different settings to collect the file offs
   + The file was only created (and opened) once. The program creates the groups and their datasets and writes to them later. And the increasing order of file offsets of metadata is the same as the creation order.
 
 #### Test 3(2 groups, dataset size = 256, default metadata block size 2KB)
-* The location of matadata:
+* The location of matadata of the output file:
   + group1 object header
   + datasets object headers in group1
   + group2  object header
