@@ -1,6 +1,6 @@
-## Study Note of HEP_HPC example program
+# Study Note of HEP_HPC example program
 
-### HEP_HPC example program:
+## HEP_HPC example program:
   + An short program that follows the same way of creating HDF5 data object as the one used by NOvA.
     It is developed to study the metadata layout in the NOvA file, in hope to find some
     tricks too improve I/O performace, such as by adjusting the metaata block size, the
@@ -27,7 +27,7 @@
   
 ---
 
-### Compare files generated from program, original ND data files and repacked ND data files
+## Compare files generated from program, original ND data files and repacked ND data files
 |                | Generated files | Original files | Repacked files |
 | :------------  | :------------   | :------------  | :------------  |
 | Group object headers | most group object headers of consecutive groups are placed in order |the object headers of consecutive groups are located far from each other and not ordered | the group object headers of consecutive groups are placed in order |
@@ -37,25 +37,11 @@
   
 ---
 
-### Test with example program
+## Test with example program
 We modified the example program with different settings. And we collected the file offsets of metadata of the output file and the sequence of HDF5 API calls when the output file was generated to better understand the behavior of the example program.
-#### Test 1 (10 groups, dataset size = 1000, default metadata block size 2KB)
-* File offsets of the metadata of the output file:
-  + table_1 object header: 800
-  + table_2 object header: 3520
-  + table_3 object header: 6728
-  + table_4 object header: 9936
-  + table_5 object header: 13144
-  + table_6 object header: 16352
-  + table_7 object header: 19560
-  + table_8 object header: 22768
-  + table_9 object header: 25976
-  + table_10 object header: 712
-* Sequence of HDF5 API calls when created the output file:
-  + The creation order of groups is the same as the increasing order of the id of group.
-  + Odd behavior: Here I observed an odd group "table_10" which is created after all other groups but has the smallest file offset. In the B-tree, there are 2 leaf nodes. Each of them contains 5 groups. And "table_10" is in the first node with "table_1" to "table_4".   
-  
-#### Test 2 (2 groups, dataset size = 256, default metadata block size 2KB)
+
+### Test 1 (2 groups, dataset size = 256, default metadata block size 2KB)
+First we ran the original example program to collect the information of the output file.
 * File offsets of Metadata blocks of the output file:
   + root group symbol table: 96
   + B-tree: 136
@@ -79,9 +65,6 @@ We modified the example program with different settings. And we collected the fi
       + object header of dataset "x": 4224
       + object header of dataset "y": 4824
       + object header of dataset "z": 5096
-      + object header of dataset "a": 5368
-      + object header of dataset "b": 5640
-      + object header of dataset "c": 5912
 
 * Sequence of HDF5 API calls when created the output file:
   + H5Fcreate out_2_256.h5
@@ -95,21 +78,13 @@ We modified the example program with different settings. And we collected the fi
   + H5Dcreate2 x
   + H5Dcreate2 y
   + H5Dcreate2 z
-  + H5Dcreate2 a
-  + H5Dcreate2 b
-  + H5Dcreate2 c
-  + H5Dwrite (6 times; write datasets in group table_2)
-  + H5Dclose (6 times; close datasets in group table_2)
+  + H5Dwrite (3 times; write datasets in group table_2)
+  + H5Dclose (3 times; close datasets in group table_2)
   + H5Gclose (close group 2)
   + H5Dwrite (5 times; write datasets in group table_1)
   + H5Dclose (5 times; close datasets in group table_1)
   + H5Gclose (close group 1)
-
-* Analysis:
-  + The object headers of two groups are right after B-tree and the heap of the file. And while the file offsets of the object headers of two groups are far from each other (800, 3520), the object headers of datasets are located between them. (But the B-tree of each dataset seems to be located far from all other metadata.)
-  + The file was only created (and opened) once. The program creates the groups and their datasets and writes to them later. And the increasing order of file offsets of metadata is the same as the creation order.
-
-#### Test 3(2 groups, dataset size = 256, default metadata block size 2KB)
+  
 * The location of matadata of the output file:
   + group1 object header
   + datasets object headers in group1
@@ -119,5 +94,26 @@ We modified the example program with different settings. And we collected the fi
   + raw data in group2
   + B-trees of datasets in group1
   + raw data in group1
-* The object headers of groups and datasets are not interleaved by raw data.
+  + The object headers of groups and datasets are not interleaved by raw data.
 
+* Analysis:
+  + The object headers of two groups are right after B-tree and the heap of the file. And while the file offsets of the object headers of two groups are far from each other (800, 3520), the object headers of datasets are located between them. (But the B-tree of each dataset seems to be located far from all other metadata.)
+  + The file was only created (and opened) once. The program creates the groups and their datasets and writes to them later. And the increasing order of file offsets of metadata is the same as the creation order.
+
+### Test 2 (10 groups, dataset size = 1000, default metadata block size 2KB)
+Then we modified the example program to generate a file with more groups and each group contains more datasets.
+* File offsets of the metadata of the output file:
+  + table_1 object header: 800
+  + table_2 object header: 3520
+  + table_3 object header: 6728
+  + table_4 object header: 9936
+  + table_5 object header: 13144
+  + table_6 object header: 16352
+  + table_7 object header: 19560
+  + table_8 object header: 22768
+  + table_9 object header: 25976
+  + table_10 object header: 712
+* Sequence of HDF5 API calls when created the output file:
+  + The creation order of groups is the same as the increasing order of the id of group.
+  + Odd behavior: Here I observed an odd group "table_10" which is created after all other groups but has the smallest file offset. In the B-tree, there are 2 leaf nodes. Each of them contains 5 groups. And "table_10" is in the first node with "table_1" to "table_4".   
+  
