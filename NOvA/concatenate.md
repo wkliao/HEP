@@ -136,18 +136,21 @@
 
 ### Chunk Ownership
 * When compression of a dataset is enabled, a chunk can only be compressed
-  and decompressed by a single process. The ownership of chunks becomes the
-  parallel I/O (data partitioning) pattern for a dataset. The internal design
-  of chunk ownership in HDF5 is based on which process accesses the biggest
-  portion of a chunk. An MPI collective communication is called to calculate
-  the ownership which needs to be consistent among all processes. All I/O
-  requests to a chunk are shipped to the chunk owner through MPI communication
-  calls (isend/irecv).
+  by a single process during a parallel/collective write. The ownership of
+  chunks becomes the parallel I/O (data partitioning) pattern for the paralle
+  write. The HDF5 policy on assigning chunk ownership is to assign the owner
+  to the process that accesses the biggest portion of a chunk. An MPI collective
+  communication is called to negotiate the ownership which needs to be consistent
+  among all the processes. All I/O requests to a chunk are then shipped to the
+  chunk owner through MPI communication calls (isend/irecv).
+* For reads, there is no ownership assigned. Each process reads the whole chunks
+  that intersects with its requests and decompress the chunks. Therefore, one
+  chunk may be read by multiple processes.
 * **TODO** -- In order to balance the workload of I/O, compression, and
   decompression, an application-level chunk redistribution among processes (and
-  align them with chunk boundaries) is necessary. This idea leads to Strategy
-  3 (see below). However, HDF5 internally ships the write data to the chunk
-  owners, which is equivalent to Strategy 3 for the write case.
+  align them with chunk boundaries) may improve performance. This idea leads to
+  Strategy 3 (see below). However, HDF5 internally ships the write data to the
+  chunk owners, which is equivalent to Strategy 3 for the write case.
 
 ### Metadata Operation Modes
 * :question:
