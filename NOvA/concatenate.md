@@ -118,8 +118,11 @@
 
 ## HDF5 Limitations
 ### Parallel I/O for Datasets with Compression Enabled
-* Parallel I/O must be collective when the dataset compression feature is
-  enabled.
+* These limitations are only applied to compressed datasets opened/created in
+  parallel I/O mode.
+  + I/O must be collective
+  + File space for the dataset are pre-allocated
+  + File space is filled with fill values (default or user-defined)
 * Parallel compression in HDF5 is not mature yet. Quoted from Jordan Henderson
   [4979](https://forum.hdfgroup.org/t/compressed-parallel-writing-problem/4979/10)
   ```
