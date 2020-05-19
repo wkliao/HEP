@@ -32,23 +32,36 @@ By iterating over all event in the file and each plane within the event the foll
 
 ## Output Graph Plots
 The following sample HDF files were used to generate a sample graph
-Nonswap:
-	* gcnhit_004a7d87-4609-4efb-a7c5-a92338c28245.h5
 
-Fluxswap:
-	* gcnhit_002ff553-c67e-461d-99f8-1a700ecbc78c.h5
+Nonswap: gcnhit_004a7d87-4609-4efb-a7c5-a92338c28245.h5
+
+Fluxswap: gcnhit_002ff553-c67e-461d-99f8-1a700ecbc78c.h5
 
 PNG images: 
 These output images (shown below) varied with event number, plane (0,1, or 2), and the type of information displayed (edges, nodes, entire plane). The following images provide the output graphs for a single event. 
 
 ![Event 70: plane 0, edge graph](evt070_plane0_edges.png)
+Figure 1. Event 70: plane 0, edge graph
 ![Event 70: plane 0, node graph](evt070_plane0_nodes.png)
+Figure 2. Event 70: plane 0, node graph
 ![Event 70: plane 0, node+edge graph](evt070_plane0.png)
+Figure 3. Event 70: plane 0, node+edge graph
+
 
 ![Event 70: plane 1, edge graph](evt070_plane1_edges.png)
+Figure 4. Event 70: plane 1, edge graph
 ![Event 70: plane 1, node graph](evt070_plane1_nodes.png)
+Figure 5. Event 70: plane 1, node graph
 ![Event 70: plane 1, node+edge graph](evt070_plane1.png)
+Figure 6. Event 70: plane 1, node+edge graph
+
 
 ![Event 70: plane 2, edge graph](evt070_plane2_edges.png)
+Figure 7. Event 70: plane 2, edge graph
 ![Event 70: plane 2, node graph](evt070_plane2_nodes.png)
+Figure 8. Event 70: plane 2, node graph
 ![Event 70: plane 2, node+edge graph](evt070_plane2.png)
+Figure 9. Event 70: plane 2, node+edge graph
+
+
+
