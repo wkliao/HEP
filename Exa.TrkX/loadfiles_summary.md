@@ -78,3 +78,6 @@ Figure 9. Event 70: plane 2, node+edge graph
  
   * Q4. Is GNN training compute-intensive?
   * A4. His current network is quite shallow and it takes less than 1 hour on a single GPU to get an acceptable accuracy. However, we need to check if they have more data and a deeper and larger network can provide a better accuracy (I believe it's most likely true).
+
+  * Q5. Why are 'fluxswap' files used only?
+  * A5. The 'fluxswap' files contains the data of electronic neutrino while 'nonswap' files contains the data of neutrino. Not sure what this means, but Jeremy mentioned that the 'fluxswap' files show more interesting information to HEP scientists.
