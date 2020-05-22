@@ -69,15 +69,16 @@ Figure 9. Event 70: plane 2, node+edge graph
   * A1. Fermi considers a classification problem such that, given many observed hits and their particle types, a GNN model learns how to classify the hits into one of the given particle types so that all the particle tracks are found.
 
   * Q2. How are the edges colored (black/grey)?
-  * A2. All the edges that satisfy the following two conditions are colored in black (true edges)
-    * The two hits connected to the edge are within 5 wires
-    * The two hits connected to the edge are from the same particle (have the same particle ID)
+  * A2. Every pair of hits that satisfy all of the following three conditions are connected by a black (true) edge
+    * If two hits are within 5 wires of each other 
+    * If two hits are from the same particle (have the same particle ID)
+    * If two hits are within the same time frame 
 
   * Q3. Are there any other data that can be considered as the actual 'true' edges?
-  * A3. Currently, no. These black edges will be used as labels in the edge classification problem.
+  * A3. Currently, no. These black edges will be used as labels in the edge classification problem. However, there is an ongoing discussion about whether an edge classification task is the way to go about particle track reconstruction (i.e. graph pooling approach). 
  
   * Q4. Is GNN training compute-intensive?
-  * A4. His current network is quite shallow and it takes less than 1 hour on a single GPU to get an acceptable accuracy. However, we need to check if they have more data and a deeper and larger network can provide a better accuracy (I believe it's most likely true).
+  * A4. Jeremy's current network is quite shallow and takes less than 1 hour on a single GPU to get an acceptable accuracy. However, we need to check if they have more data and a deeper and larger network can provide a better accuracy (I believe it's most likely true).
 
   * Q5. Why are 'fluxswap' files used only?
-  * A5. The 'fluxswap' files contains the data of electronic neutrino while 'nonswap' files contains the data of neutrino. Not sure what this means, but Jeremy mentioned that the 'fluxswap' files show more interesting information to HEP scientists.
+  * A5. The 'fluxswap' files contain the data of electron neutrino interactions while 'nonswap' files contains the muon neutrino. The 'nonswap' files end up with a lack of internal structure to map, therefore creating a trivial problem for the network to solve. On the other hand, phenomena such as the 'electromagnetic shower events' in the 'fluxswap' files show more interesting information to HEP scientists.
