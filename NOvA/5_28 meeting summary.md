@@ -38,3 +38,7 @@
     1. H5Ovisit: get all the information
     2. H5Ovisit2: get native information & have some control over the other information
     3. H5Ovisit3: only get the data model information (can be controlled with a set of flags)
+
+## Action items
+* Flush call: Try the function call H5Fflush and H5Dflush to see how file offsets are affected.
+* H5Ovisit: Try different versions and settings of H5Ovisit.
