@@ -82,3 +82,11 @@ Figure 9. Event 70: plane 2, node+edge graph
 
   * Q5. Why are 'fluxswap' files used only?
   * A5. The 'fluxswap' files contain the data of electron neutrino interactions while 'nonswap' files contains the muon neutrino. The 'nonswap' files end up with a lack of internal structure to map, therefore creating a trivial problem for the network to solve. On the other hand, phenomena such as the 'electromagnetic shower events' in the 'fluxswap' files show more interesting information to HEP scientists.
+
+# Meeting Note (June 17, 2020)
+## Summary of Discussion
+
+  1. A single training sample is a graph generated from all the hits of a single particle (event).
+  2. Each sample has different sizes due to the different number of hits.
+  3. His batch size (40) is limited by the memory space of 2 GPUs (16 x 2 GiB).
+  4. The current message passing neural network architecture is a preliminary design and we can consider any different structures.
