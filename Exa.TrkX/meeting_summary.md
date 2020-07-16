@@ -9,7 +9,7 @@ Current training samples contain only part of the available data (9 features per
 Other types of GNN models are being considered; in particular one with graph clustering and graph pooling layers. 
 
 ## HDF5 Concatenation
-Looking into concatenating all input files into a single larger file. Provided our HDF5 file concatenation tool. 
+Looking into concatenating all input files into a single larger file. Provided our HDF5 file concatenation tool: https://github.com/NU-CUCIS/ph5concat
 
 ## Model Training Timing Table 
 |                  Measurement                         Timing       |
