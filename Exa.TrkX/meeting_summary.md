@@ -1,4 +1,4 @@
-# July 14, 2020 GNN Meeting Summary
+# GNN Meeting Summary (July 14, 2020)
 This file summarizes the key points made during the meeting
 
 ## Feature Training 
