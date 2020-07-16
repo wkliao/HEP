@@ -21,3 +21,23 @@ Looking into concatenating all input files into a single larger file. Provided o
 | Average End-to-End time over several epochs  | 11436.7148 seconds |
 | Model Accuracy                               | 85% +- 2/3%        |
 
+## Areas for Investigation
+	* Based on our performance evaluation on a local GPU machine, I/O operations (28% of the total training time) are not negligible. We will further explore this aspect and possibly find a way to reduce the cost. 
+
+	* Concatenating input files could potentially decrease data loading time by saving time for file open/close
+
+	* Scaling up with more GPUs could decrease data loading time by increasing the degree of parallelism with more threads 
+
+## Steps for Studying Performance Behavior
+	* Study the effectiveness of the current model and consider further improvements
+
+	* Try combining Pytorch files to decrease file I/O time for data loading during training
+
+	* Track the number of threads used to execute the data loading function __getitem__()
+
+	* Scale up the GNN code on multiple GPUs and/or on a supercomputer and analyze the performance
+
+	* Check if the read/write bandwidth matches the I/O hardware performance peak
+
+	* Study different GNN models with graph pooling layers and/or clustering
+
