@@ -12,7 +12,8 @@ Other types of GNN models are being considered; in particular one with graph clu
 Looking into concatenating all input files into a single larger file. Provided our HDF5 file concatenation tool: https://github.com/NU-CUCIS/ph5concat
 
 ## Model Training Timing Table 
-|                  Measurement                         Timing       |
+
+|                  Measurement                 |       Timing       |
 | :------------------------------------------: | :----------------: |
 | Number of Iterations Per Epoch               | 6266 iterations    |
 | Average I/O time over several epochs         | 3211.1835 seconds  |
