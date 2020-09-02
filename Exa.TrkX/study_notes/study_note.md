@@ -69,3 +69,4 @@
 2. [The HEP.TrkX Project: deep neural networks for HL-LHC online and offline tracking](https://lss.fnal.gov/archive/2017/conf/fermilab-conf-17-326-cd.pdf), 2017.
 3. [Graph Neural Networks for Particle Reconstruction in High Energy Physics detectors](https://arxiv.org/pdf/2003.11603.pdf), 2020.
 4. [Novel deep learning methods for track reconstruction](https://arxiv.org/abs/1810.06111), 2018
+5. [Track Seeding and Labelling with Embedded-space Graph Neural Networks](https://arxiv.org/abs/2007.00149), 2020
