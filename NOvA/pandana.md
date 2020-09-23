@@ -30,42 +30,49 @@ performance considering the I/O pattern in PandAna.
 
 ---
 
-### PandAna's Parallel Read Strategy
+### Parallel Read Strategy for Event Selection
 #### Data Partitioning
 PandAna's read data partitioning pattern divides the event IDs exclusively into
-contiguous event IDs among all processes. The implementation includes the
-followings.
-1. Find the number of unique event IDs. This is essentially the length of
-   dataset **'/spill/evt.seq'**. Note the contents of **'/spill/evt.seq'** are
-   0, 1, 2, 3, ...., N-1, if its length is N.
-2. Calculate the Partitioning boundaries, so each process is responsible for a
+contiguous ranges of event IDs evenly among all processes. The implementation
+includes the followings.
+1. Find the total number of unique event IDs. This is essentially the length of
+   dataset **'/spill/evt.seq'** whose contents are 0, 1, 2, 3, ...., N-1, if
+   its length is N.
+2. Calculate the partitioning boundaries, so each process is responsible for a
    exclusive and contiguous range of event IDs. If N is not divisible by P, the
-   number of processes, then the remainder IDs are assigned to the processes in
+   number of processes, then the remainder IDs are assigned to the processes of
    lower ranks.
 3. Note this calculation does not require reading the contents of
    **'/spill/evt.seq'**, but only inquires the length of **'/spill/evt.seq'**.
+   ```
+   my_count = N / nprocs;
+   my_start = my_count * rank;
+   if (rank < N % nprocs) {
+       my_start += rank;
+       my_count++;
+   }
+   else {
+       my_start += N % nprocs;
+   }
+   ```
 #### Parallel reads
-For each data group, G, in the concatenated file, do the followings:
-1. All processes read the entire of dataset **'/G/evt.seq'** (or a single
+For each data group, **G**, in the concatenated file, do the followings:
+1. All processes read the entire dataset **'/G/evt.seq'** (or a single
    process reads the entire **'/G/evt.seq'** and broadcasts it to all
-   processes.)
+   other processes.)
    * Note all datasets in the same group share the number of rows, i.e. the
      size of first dimension.
    * The contents of **'/G/evt.seq'** are monotonically non-decreasing. It is
      possible to have repeated event IDs in consecutive elements.
-2. Each process checks the contents of **'/G/evt.seq'** and finds the starting
-   index and length of event IDs fall into its responsible range.
-   * A binary search should be used, without sequentially checking the array
+2. Each process checks the contents of **'/G/evt.seq'** to find the starting
+   and ending indices that point to range of event IDs fall into its
+   responsible range.
+   * Two binary searches should be used, one to search for starting index and
+     the other for ending index. This avoid sequentially checking the array
      contents.
-3. All processes read other datasets in group G collectively, using the
-   starting indices and lengths of the subarrays, one dataset at a time.
-   * Note the lengths can be different among processes.
+3. All processes read the requested datasets in group G collectively, using
+   the starting and ending indices, one dataset at a time.
    * Read ranges are not overlapping among all processes.
-
-#### I/O and Communications
-* For each go() call in PandAna, each process only reads 1 chunk from `evt.seq` dataset in `spill` group.
-* For each go() call in PandAna, each process only reads 1/P of `evt.seq` dataset in all the requested groups.
-* An allgather(1 integer offset) (step 3) and one allgather(P integer counts) (step 4.3) for each of the requested groups.
 
 ---
 
