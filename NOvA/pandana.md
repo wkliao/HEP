@@ -59,32 +59,34 @@ includes the followings.
 4. Each process is responsible for the range from 'my_start' to 'my_end' includively.
 
 #### Parallel reads
-Each group, **G**, in the concatenated file contains dataset 'evt.seq' which is used
-to calculated the ranges of data elements of all other datasets in group 'G'.
+Each group, **G**, in the concatenated file contains dataset 'evt.seq' whose values 
+correspond to '/spill/evt.seq' and can be used to find the data element ranges of
+all other datasets in the same group, to be read by all processes.
    * Note all datasets in the same group share the number of rows, i.e. the
      size of first dimension.
    * The contents of **'/G/evt.seq'** are monotonically non-decreasing. It is
      possible to have repeated event IDs in consecutive elements.
 
 Parallel reads consist of the following steps.
-1. Read **'/G/evt.seq'** and calculate ranges for all processes. This can be done in 3 options.
-   a. Option 1. Root process reads the entire '/G/evt.seq' and then broadcasts to the
-      remaining processes. Then all processes calculate their own ranges.
-   b. Option 2. All processes collectively read the whole '/G/evt.seq'.
-       Then all processes calculate their own ranges.
-   c. Option 3. Only root process reads '/G/evt.seq'. Then root process calculates
-      rnages for all processes, and calls MPI_Scatter to scatter the ranges
-      (start and end) to all other processes.
-2. Calaulate the ranges by checking the contents of **'/G/evt.seq'** to find the starting
-   and ending indices that point to range of event IDs fall into its
-   responsible range.
+1. Read **'/G/evt.seq'** and calculate array index ranges for all processes. 
+   This can be done in 3 options.
+   a. Option 1. Root process reads the entire '/G/evt.seq' and then broadcasts 
+      to the remaining processes. All processes use the contents of
+      '/G/evt.seq' to calculate their responsible index ranges. 
+   b. Option 2. All processes collectively read the whole '/G/evt.seq'. All
+      processes calculate their own responsible index ranges.
+   c. Option 3. Only root process reads '/G/evt.seq'. Root calculates
+      responsible index ranges for all processes, and calls MPI_Scatter to 
+      scatter the boundaries of ranges (start and end) to all other processes.
+2. Calculate the responsible index ranges by checking the contents of 
+   **'/G/evt.seq'** to find the starting and ending indices that point to range 
+   of event IDs fall into its responsible range.
    * Two binary searches should be used, one to search for starting index and
      the other for ending index. This avoid sequentially checking the array
      contents.
 3. All processes read the requested datasets in group G collectively, using
    the starting and ending indices (hyperslab), one dataset at a time.
    * Note read ranges are not overlapping among all processes.
-
 ---
 
 ### Parallel Write for Small Datasets
