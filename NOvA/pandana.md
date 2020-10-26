@@ -70,14 +70,14 @@ all other datasets in the same group, to be read by all processes.
 Parallel reads consist of the following steps.
 1. Read **'/G/evt.seq'** and calculate array index ranges for all processes. 
    This can be done in 3 options.
-   a. Option 1. Root process reads the entire '/G/evt.seq' and then broadcasts 
-      to the remaining processes. All processes use the contents of
-      '/G/evt.seq' to calculate their responsible index ranges. 
-   b. Option 2. All processes collectively read the whole '/G/evt.seq'. All
-      processes calculate their own responsible index ranges.
-   c. Option 3. Only root process reads '/G/evt.seq'. Root calculates
-      responsible index ranges for all processes, and calls MPI_Scatter to 
-      scatter the boundaries of ranges (start and end) to all other processes.
+   * Option 1. Root process reads the entire '/G/evt.seq' and then broadcasts 
+     to the remaining processes. All processes use the contents of
+     '/G/evt.seq' to calculate their responsible index ranges. 
+   * Option 2. All processes collectively read the whole '/G/evt.seq'. All
+     processes calculate their own responsible index ranges.
+   * Option 3. Only root process reads '/G/evt.seq'. Root calculates
+     responsible index ranges for all processes, and calls MPI_Scatter to 
+     scatter the boundaries of ranges (start and end) to all other processes.
 2. Calculate the responsible index ranges by checking the contents of 
    **'/G/evt.seq'** to find the starting and ending indices that point to range 
    of event IDs fall into its responsible range.
