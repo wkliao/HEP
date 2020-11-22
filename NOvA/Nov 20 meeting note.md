@@ -37,9 +37,10 @@
             4. Decompress chunks concurrently.
             5. Data redistribution: All-to-all communication to send data to the requested processes.
     3. Adjust policies based on different access patterns of the Nova dataset and other new datasets: percentage of reading time, compression factor, etc.
-    4. Freedom of adjustment of PandAna read pattern: align evt division with chunk size.
+    
+* Adjustment of PandAna read pattern: Sacrifice the load balance in the event selection computation to imiprove the I/O scalability. eg. Align evt division with chunk size.
 
 ## Action items:
 * Timing breakdown: Get the time percentage of file read, decompression, and other time.
-* Study the chunk contention of different datasets: Collect the name of the most shared dataset.
+* Add additional features to the pandana_read.c to study the chunk contention of different datasets: Collect the name of the most shared dataset.
 * Come up with new chunk assignment policies.
