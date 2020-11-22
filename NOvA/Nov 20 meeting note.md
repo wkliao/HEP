@@ -14,7 +14,7 @@
 | 128 | 21,060 | 7,228 | 8 |
 | 256 | 34,884 | 7,260 | 16 |
 | 512 | 62,532 | 7,275 | 31 |
-* Different datasets may behave differently.
+* Prof. Liao mentioned the URL of our repo https://github.com/NU-CUCIS/ph5concat/tree/master/case_study with the C program that can report some chunk contention statistics. Marc suggested adding features, such as to find which chunks are shared a lot, because different datasets may behave differently.
 
 ## Ideas to improve the PandAna I/O performance
 * Faster methods for reading "evt.seq"
@@ -38,7 +38,11 @@
             5. Data redistribution: All-to-all communication to send data to the requested processes.
     3. Adjust policies based on different access patterns of the Nova dataset and other new datasets: percentage of reading time, compression factor, etc.
     
-* Adjustment of PandAna read pattern: Sacrifice the load balance in the event selection computation to imiprove the I/O scalability. eg. Align evt division with chunk size.
+* Marc suggested an idea to sacrifice the load balance in the event selection computation to imiprove the I/O scalability. eg. Align evt division with chunk size.
+
+## Meeting Attendees
+Marc, James, Wei-keng, Kai-yuan, Kewei, Alexandra.
+Marc will contact Adam (and someone else) to join the future call.
 
 ## Action items:
 * Timing breakdown: Get the time percentage of file read, decompression, and other time.
