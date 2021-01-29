@@ -15,8 +15,8 @@
 * **Hit clustering**
   + **Hit** -- A hit is a particle location detected on a slice (detector layer).
   + Data clustering algorithm is applied on each slice to identify individual
-    particles from those pixels, so each particle is repredented by its 3D coordinates.
-  + Applicatioon of clustering on the raw data slice is necessary, because a particle
+    particles from those pixels, so each particle is represented by its 3D coordinates.
+  + Application of clustering on the raw data slice is necessary, because a particle
     may be captured by multiple detector wires and appear in multiple pixels, e.g. a
     pixel and its surrounding pixels.
   + There are O(10^8) pixels and *hit clustering* reduces it to O(10^5).
@@ -40,19 +40,32 @@
     * CKF is known to be computational expensive and not scalable.
     * RNN, LSTM, see reference 4. Given a sequence of hits, the model is built to predict the next hit.
       So, a track can be constructed/expanded by the sequence.
-    
+
 * **Track fitting**
   + A full resolution fit is performed on the final set of track candidates.
   + Each seed can have multiple candidate edges.
   + True edge must be identified, so the entire particle track can be constructed.
-  + **ML methods used** that generate models to classify an edge into *true* and *fake*.
+  + **ML methods used** that generate models to classify an edge into *true* and *false*.
     * CNN that takes images, i.e. pixels, for training and testing
     * LSTM that takes sequences of data points (coordinates)
     * GNN that takes graph data, i.e. V and E
       + Vertex set V is a collection of track candidates.
-      + Edges? **TODO** How is the grapgh  constructed?
+      + Edges? **TODO** How is the graph  constructed?
       + Message passing learning passes 'learning' around neighbors of a vertex
       + See reference 4.
+
+## FermiLab Collaboration
+* Problem Definition: Reconstruct trajectories of charged particles from collision event by correctly classify the path of the particle
+
+* Input Dataset: DUNE HDF5 Dataset
+  + Cori File Paths to Dataset: /global/cscratch1/sd/csl/hit2d
+    * fluxswap dataset: /global/cscratch1/sd/csl/hit2d/fluxswap
+    * nonswap dataset: /global/cscratch1/sd/csl/hit2d/nonswap
+
+* Processed Dataset: Pytorch Dataset
+  + Cori File Paths to Dataset: /global/cscratch1/sd/csl/processed
+
+* Model output: Classification of true or false edges in particle reconstruction graph
 
 ## TrkX Project Home Pages
 1. [Exa.TrkX](https://exatrkx.github.io) Project Home Page, including URL to github repo
@@ -63,10 +76,11 @@
    data from a collision between proton bunches at the Large Hadron Collider at CERN.
    The goal is to group the recorded measurements or hits for each event into tracks,
    sets of hits that belong to the same initial particle.
-   
+
 ## References
 1. [Exa.TrkX all-hands meeting](https://indico.fnal.gov/event/23974/), April 7, 2020.
 2. [The HEP.TrkX Project: deep neural networks for HL-LHC online and offline tracking](https://lss.fnal.gov/archive/2017/conf/fermilab-conf-17-326-cd.pdf), 2017.
 3. [Graph Neural Networks for Particle Reconstruction in High Energy Physics detectors](https://arxiv.org/pdf/2003.11603.pdf), 2020.
 4. [Novel deep learning methods for track reconstruction](https://arxiv.org/abs/1810.06111), 2018
 5. [Track Seeding and Labelling with Embedded-space Graph Neural Networks](https://arxiv.org/abs/2007.00149), 2020
+6. [Graph Neural Networks for Reconstruction in DUNE](https://indico.fnal.gov/event/46736/contributions/203490/attachments/138073/172668/2020-12-04_CLARIPHY_talk.pdf), 2020
