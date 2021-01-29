@@ -17,11 +17,11 @@ kNumuQuality = ['rec.energy.numu']['trkccE'] > 0 & ['rec.sel.remid']['pid'] > 0 
 ```
 
 ## Parallel Read Workflow in PandAna
-1. Every process reads `evtseq` dataset from `spill` group.
-2. The `evtseq` values are evenly distributed to all processes. Each process finds its range of the values.
+1. Every process reads `evt.seq` dataset from `spill` group.
+2. The `evt.seq` values are evenly distributed to all processes. Each process finds its range of the values.
 3. Traverse over all the requested groups:
-    1. Every process reads `evtseq` dataset from the group.
-    2. Every process finds the rows of the requested datasets, that have its responsible `evtseq` values.
+    1. Every process reads `evt.seq` dataset from the group.
+    2. Every process finds the rows of the requested datasets, that have its responsible `evt.seq` values.
     3. Each individual process independently reads the rows.
 
 ## Research Ideas
@@ -30,21 +30,63 @@ performance considering the I/O pattern in PandAna.
 
 ---
 
-### Parallel Read Strategy for PandAna
-#### Algorithm
-1. Every process reads the length of `evtseq` dataset in `spill` group and calculates how many `evtseq` values should be covered by each process.
-2. Every process reads the last `evtseq` value of its own range.
-3. All the processes perform allgather() for their last `evtseq` value.
-4. Traverse over all the requested groups:
-    1. Every process reads 1/P of `evtseq` dataset in a group (or a single process reads the entire `evtseq` and scatter it).
-    2. Every process counts how many rows should be covered by each process using the `evtseq` values obtained in step 3. The output of this step is P integers per process.
-    3. Allgather() for the P integers (counts). Then, every process calculates which rows it should read from the datasets in this group using the gathered counts.
+### Parallel Read Strategy for Event Selection
+#### Data Partitioning
+PandAna's read data partitioning pattern divides the event IDs exclusively into
+contiguous ranges of event IDs evenly among all processes. The implementation
+includes the followings.
+1. Find the total number of unique event IDs. This is essentially the length of
+   dataset **'/spill/evt.seq'** whose contents are 0, 1, 2, 3, ...., N-1, if
+   its length is N.
+2. Calculate the partitioning boundaries, so each process is responsible for a
+   exclusive and contiguous range of event IDs. If N is not divisible by P, the
+   number of processes, then the remainder IDs are assigned to the processes of
+   lower ranks.
+3. Note this calculation does not require reading the contents of
+   **'/spill/evt.seq'**, but only inquires the length of **'/spill/evt.seq'**.
+   ```
+   my_count = N / nprocs;
+   my_start = my_count * rank;
+   if (rank < N % nprocs) {
+       my_start += rank;
+       my_count++;
+   }
+   else {
+       my_start += N % nprocs;
+   }
+   my_end = my_start + my_count - 1;
+   ```
+4. Each process is responsible for the range from 'my_start' to 'my_end' includively.
 
-#### I/O and Communications
-* For each go() call in PandAna, each process only reads 1 chunk from `evtseq` dataset in `spill` group.
-* For each go() call in PandAna, each process only reads 1/P of `evtseq` dataset in all the requested groups.
-* An allgather(1 integer offset) (step 3) and one allgather(P integer counts) (step 4.3) for each of the requested groups.
+#### Parallel reads
+Each group, **G**, in the concatenated file contains dataset 'evt.seq' whose values 
+correspond to '/spill/evt.seq' and can be used to find the data element ranges of
+all other datasets in the same group, to be read by all processes.
+   * Note all datasets in the same group share the number of rows, i.e. the
+     size of first dimension.
+   * The contents of **'/G/evt.seq'** are monotonically non-decreasing. It is
+     possible to have repeated event IDs in consecutive elements.
 
+Parallel reads consist of the following steps.
+1. Read **'/G/evt.seq'** and calculate array index ranges for all processes. 
+   This can be done in 3 options.
+   * Option 1. Root process reads the entire '/G/evt.seq' and then broadcasts 
+     to the remaining processes. All processes use the contents of
+     '/G/evt.seq' to calculate their responsible index ranges. 
+   * Option 2. All processes collectively read the whole '/G/evt.seq'. All
+     processes calculate their own responsible index ranges.
+   * Option 3. Only root process reads '/G/evt.seq'. Root calculates
+     responsible index ranges for all processes, and calls MPI_Scatter to 
+     scatter the boundaries of ranges (start and end) to all other processes.
+2. Calculate the responsible index ranges by checking the contents of 
+   **'/G/evt.seq'** to find the starting and ending indices that point to range 
+   of event IDs fall into its responsible range.
+   * Two binary searches should be used, one to search for starting index and
+     the other for ending index. This avoid sequentially checking the array
+     contents.
+3. All processes read the requested datasets in group G collectively, using
+   the starting and ending indices (hyperslab), one dataset at a time.
+   * Note read ranges are not overlapping among all processes.
 ---
 
 ### Parallel Write for Small Datasets
@@ -60,5 +102,5 @@ performance considering the I/O pattern in PandAna.
 ---
 
 ### Chunk Setting in Dataset Concatenation
-When reading datasets, PandAna evenly partitions each dataset to all processes based on `evtseq`.
-If a dataset uses a chunk size which is LCM among the `evtseq` counts, the duplicated decompression cost in parallel read can be minimized.
+When reading datasets, PandAna evenly partitions each dataset to all processes based on `evt.seq`.
+If a dataset uses a chunk size which is LCM among the `evt.seq` counts, the duplicated decompression cost in parallel read can be minimized.
