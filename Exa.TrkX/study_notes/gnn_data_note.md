@@ -2,8 +2,14 @@
 * Liquid Argon Time Projection Chamber (LArTPC) is a detector for neutrino experiments and proton decay searches
 * The drift chamber tracks the drift of the ghost (echo) outputs of the collision
 * Each of the planes (U,V,Y) are pointed in a different direction to predict the type of particles
-* Different types of particles produce different particles produce different angles on the planes
+* Different types of particles produce different angles on the planes
 * Physical wires are located on the plane and are used as a distance unit
+* Threshold parameter settings
+  - Wire spacing: 5mm  
+  - Timing: 1.5mm/us
+  - Readout speed: 2MHz
+  - 0.5us/sample = 0.75mm
+  - 5/0.75 = 6.667mm  
 
 <p align="center">
 <img align="center" src="lartpc.png" width="800">
