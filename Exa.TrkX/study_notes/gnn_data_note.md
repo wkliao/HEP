@@ -5,9 +5,9 @@
 * Different types of particles produce different particles produce different angles on the planes
 * Physical wires are located on the plane and are used as a distance unit
 
-<p float="left">
-  <img src="/lartpc.png" width="600" />
-  <img src="/lartpc_planes.png" width="300" /> 
+<p align="left">
+  <img align="center" src="/lartpc.png" width="600" />
+  <img align="center" src="/lartpc_planes.png" width="300" /> 
 </p>
 
 * Current DUNE dataset is preprocessed version of original detector output
