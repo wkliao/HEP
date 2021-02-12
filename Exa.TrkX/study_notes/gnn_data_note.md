@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-<img align="center" src="lartpc_planes.png" alt="Liquid Argon TPC Detector" width="200">
+<img align="center" src="lartpc_planes.png" alt="Liquid Argon TPC Detector" width="400">
 </p>
 
 * Current DUNE dataset is preprocessed version of original detector output
@@ -23,15 +23,12 @@
 
 ## FermiLab Collaboration
 * Problem Definition: Reconstruct trajectories of charged particles from collision event by correctly classify the path of the particle
-
 * Input Dataset: DUNE HDF5 Dataset
   + Cori File Paths to Dataset: /global/cscratch1/sd/csl/hit2d
     * fluxswap dataset: /global/cscratch1/sd/csl/hit2d/fluxswap
     * nonswap dataset: /global/cscratch1/sd/csl/hit2d/nonswap
-
 * Processed Dataset: Pytorch Dataset
   + Cori File Paths to Dataset: /global/cscratch1/sd/csl/processed
-
 * Model output: Classification of true or false edges in particle reconstruction graph
 
 
