@@ -84,3 +84,16 @@
 4. [Novel deep learning methods for track reconstruction](https://arxiv.org/abs/1810.06111), 2018
 5. [Track Seeding and Labelling with Embedded-space Graph Neural Networks](https://arxiv.org/abs/2007.00149), 2020
 6. [Graph Neural Networks for Reconstruction in DUNE](https://indico.fnal.gov/event/46736/contributions/203490/attachments/138073/172668/2020-12-04_CLARIPHY_talk.pdf), 2020
+
+## Additional References from Alexandra, 2/11/21:
+Project-Specific:
+This proposal is from 2019 and provides a good overview of the goal of the program, and a short synopsis of the relevant physics: https://indico.physics.lbl.gov/event/898/contributions/3701/attachments/1929/2418/ExaTrkX_Proposal-243931.pdf 
+
+Jeremy Hewes' presentation July 2020: https://indico.slac.stanford.edu/event/371/contributions/1213/attachments/533/856/2020-07-14_GNNs_for_reconstruction_in_LArTPCs.pdf
+
+Particle Physics, Tracking, Detectors, Neutrinos, Fermilab:
+Good overview of ATLAS tracking, with best description of track seeding I have seen so far:  https://indico.cern.ch/event/742090/contributions/3071860/attachments/1693222/2724898/Tracking_in_ATLAS.pdf
+
+Physics-based overview of LArTPC projects at Fermilab: https://indico.cern.ch/event/724045/contributions/2990064/attachments/1653764/2646372/Asaadi_2018_TAMU.pdf
+
+Popular science descritption of neutrinos, fun graphics, Super-Kamiokande experiment: (can access Scientific American through Northwestern Library SSO): https://www.scientificamerican.com/article/detecting-massive-neutrinos
