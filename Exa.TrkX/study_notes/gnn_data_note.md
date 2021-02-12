@@ -6,7 +6,7 @@
 * Physical wires are located on the plane and are used as a distance unit
 
 <p align="center">
-<img align="center" src="lartpc.png" width="600">
+<img align="center" src="lartpc.png" width="800">
 </p>
 <p align="center">
 <img align="center" src="lartpc_planes.png" width="300">
