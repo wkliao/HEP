@@ -5,9 +5,13 @@
 * Different types of particles produce different particles produce different angles on the planes
 * Physical wires are located on the plane and are used as a distance unit
 
-Drift Chamber Diagram   |  Plane Views of LArTPC
-:----------------------:|:-------------------------:
-![](lartpc.png)         |  ![](lartpc_planes.png)
+<p align="center">
+<img align="center" src="lartpc.png" width="600">
+</p>
+<p align="center">
+<img align="center" src="lartpc_planes.png" width="300">
+</p>
+
 
 * Current DUNE dataset is preprocessed version of original detector output
 * Hits are identified by wire readout and deconvolution is performed to differentiate different track hits
