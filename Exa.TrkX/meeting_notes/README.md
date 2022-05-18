@@ -1,4 +1,4 @@
-Meetin notes
+Meeting notes
 * [Aug. 20, 2020](Aug20_2020_distributed_meeting_summary.md)
 * [Jun. 17, 2020 ppt](Jun17_2020_meeting.pptx)
 * [Jul. 14, 2020](July14_2020_benchmark_meeting_summary.md) and ([ppt](July14_2020_Meeting.pptx))
